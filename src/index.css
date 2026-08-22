@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-canvas: #FFFDF8;
+  --bg-sidebar: #DCE8D7;
+  --color-primary: #2D5A45;
+  --text-primary: #1E2B24;
+}
+
+body {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #FFFDF8;
+  color: #1E2B24;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: 'Fraunces', Georgia, serif;
+}
+
+/* Crisp scrollbar for clean stationery look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFFDF8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DCE8D7;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #B5D0AF;
+}
