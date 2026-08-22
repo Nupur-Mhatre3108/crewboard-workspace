@@ -1,98 +1,94 @@
-# 🌿 CrewBoard — Collaborative Kanban Platform
+# CrewBoard
 
-> **A minimal, physical-inspired Kanban task management workspace for student project teams and semester milestones.**  
-> *Vibe:* Pinterest × Notion × Milanote × Apple Notes (tactile, solid colors, editorial typography, calming).
+A minimalist collaborative Kanban workspace built for student project teams to organize tasks, milestones, and sprint planning.
 
----
+This repository contains the **UI Foundation** of CrewBoard, including the complete frontend layout, reusable components, routing, and workspace pages.
 
-## 📌 Experiment 1 Milestone — UI Foundation
+## Preview
 
-This repository represents **Experiment 1 of a 10-experiment MERN progression**. It establishes a solid-color, stationery-inspired design system with Google Fonts typography, empty workspace states, and routing that subsequent experiments will build upon.
+CrewBoard currently includes:
 
----
+- Landing page
+- Login & Registration pages
+- Dashboard workspace
+- Kanban board
+- Projects page
+- Team page
+- Workspace Settings page
 
-## 🎨 Solid Color System & Typography
+## Tech Stack
 
-### Solid Color Palette
-- **Canvas Background**: `#FFFDF8` (warm off-white cream)
-- **Sidebar Canvas**: `#DCE8D7` (solid refined sage)
-- **Primary Brand & Buttons**: `#2D5A45` (deep forest / eucalyptus)
-- **Text Primary**: `#1E2B24` (deep charcoal-green)
-- **Card Paper Surface**: `#F3F7F0` (light sage paper)
-- **Pastel Sticky Note Colors**:
-  - 🌿 **Sage**: `#B5D0AF`
-  - 🧈 **Butter Yellow**: `#F7EBAA`
-  - 🍑 **Peach**: `#F4B89B`
-  - 🪻 **Lavender**: `#C7B8DF`
-  - 🌊 **Powder Blue**: `#A2C0D4`
+- React 19
+- Vite
+- Tailwind CSS
+- React Router
+- JavaScript (ES6)
 
-### Typography
-- **Headings & Serif Accents**: `Fraunces`
-- **Body, UI, Navigation, Buttons**: `Manrope`
+## Project Structure
 
----
-
-## 👥 Crew Initials
-- **Nupur** (`N` — `#2D5A45`, text `#FFFFFF`) — Lead & Full Stack / Owner
-- **Anushka** (`A` — `#F4B89B`, text `#1E2B24`) — Frontend & UI
-- **Krishna** (`K` — `#B5D0AF`, text `#1E2B24`) — Backend & Auth
-- **Gourish** (`G` — `#C7B8DF`, text `#1E2B24`) — DevOps & Database
-
----
-
-## 📁 Folder Architecture
-
-```
+```text
 CrewBoard/
 ├── src/
-│   ├── assets/              # Static assets & graphics
-│   ├── components/          # 9 Core Reusable Components
-│   │   ├── Button.jsx       # Solid editorial buttons
-│   │   ├── Input.jsx        # Floating cream inputs with charcoal border
-│   │   ├── Navbar.jsx       # Floating search (⌘K) & user initial
-│   │   ├── Sidebar.jsx      # Solid sage sidebar (#DCE8D7) with active pill (#2D5A45)
-│   │   ├── StatsCard.jsx    # Compact typography metric blocks
-│   │   ├── ProjectCard.jsx  # Reusable project card
-│   │   ├── TaskCard.jsx     # Solid pastel sticky note card
-│   │   ├── KanbanColumn.jsx # 3-column sage paper container with empty states
-│   │   └── Modal.jsx        # Accessible editorial dialog
-│   ├── context/             # [Exp 3] React Context Providers
-│   ├── data/
-│   │   └── mockData.js      # Clean workspace dataset & initials team roster
-│   ├── hooks/               # [Exp 2] Custom React Hooks
+│   ├── assets/
+│   ├── components/
 │   ├── layouts/
-│   │   └── AppLayout.jsx    # Shared application layout
-│   ├── pages/               # 8 Connected Routes
-│   │   ├── LandingPage.jsx  # Editorial 2-column hero with Kanban preview
-│   │   ├── LoginPage.jsx    # Stationery sign-in
-│   │   ├── RegisterPage.jsx # Student registration
-│   │   ├── DashboardPage.jsx# Empty workspace dashboard with "Create Project" CTA
-│   │   ├── KanbanBoardPage.jsx # 3 empty Kanban columns with "Add Task" buttons
-│   │   ├── ProjectsPage.jsx # Distinct projects overview with templates
-│   │   ├── TeamPage.jsx     # Distinct team roster & permissions view
-│   │   └── SettingsPage.jsx # Distinct workspace settings & color palette
-│   ├── services/            # [Exp 4+] REST API client services
-│   ├── utils/               # Frontend utilities
-│   ├── App.jsx              # React Router configuration
-│   ├── index.css            # Tailwind directives & design tokens
-│   └── main.jsx             # DOM root mount
-├── backend/                 # [Exp 4–7] Backend structure (config, controllers, models, routes, etc.)
-├── docs/                    # [Exp 1–10] Documentation & milestone specs
+│   ├── pages/
+│   ├── data/
+│   ├── services/
+│   ├── utils/
+│   ├── App.jsx
+│   └── main.jsx
+├── backend/
+├── docs/
 ├── package.json
 └── README.md
 ```
 
----
+## Getting Started
 
-## 🚀 Quick Start
+1. Clone the repository.
 
 ```bash
-# 1. Install Dependencies
-npm install
-
-# 2. Run Development Server
-npm run dev
-
-# 3. Build for Production (Verified: 0 errors in 5.78s)
-npm run build
+git clone https://github.com/Nupur-Mhatre31/crewboard-kanban-workspace.git
 ```
+
+2. Install dependencies.
+
+```bash
+npm install
+```
+
+3. Start the development server.
+
+```bash
+npm run dev
+```
+
+The application will be available at:
+
+```text
+http://localhost:5173
+```
+
+## Current Progress
+
+- [x] UI design system
+- [x] Responsive workspace layout
+- [x] Authentication screens
+- [x] Dashboard UI
+- [x] Kanban board UI
+- [x] Projects page UI
+- [x] Team page UI
+- [x] Workspace settings UI
+- [ ] State management
+- [ ] Backend API integration
+- [ ] Authentication
+- [ ] Database persistence
+- [ ] Drag-and-drop Kanban
+
+## Roadmap
+
+CrewBoard is being developed incrementally as a full-stack MERN application. Upcoming milestones include custom hooks, context-based state management, REST API integration, authentication, MongoDB persistence, and deployment.
+
+
+
