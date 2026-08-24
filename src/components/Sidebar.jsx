@@ -1,12 +1,15 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { LogOut, ChevronDown } from 'lucide-react';
-import { currentUser, mockWorkspace } from '../data/mockData';
+import { currentUser } from '../utils/constants';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 /**
  * Solid Sage Sidebar Component
  */
 export default function Sidebar({ isOpen = true, onClose }) {
+  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
+
   const navItems = [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Kanban Board', path: '/board' },
@@ -48,13 +51,16 @@ export default function Sidebar({ isOpen = true, onClose }) {
           </Link>
 
           {/* Workspace Switcher */}
-          <div className="bg-[#FFFDF8] rounded-2xl p-3 border border-[#C6D6C0] flex items-center justify-between cursor-pointer hover:border-[#2D5A45] transition-colors">
+          <Link 
+            to="/settings" 
+            className="bg-[#FFFDF8] rounded-2xl p-3 border border-[#C6D6C0] flex items-center justify-between cursor-pointer hover:border-[#2D5A45] transition-colors"
+          >
             <div className="truncate pr-2">
-              <p className="text-xs font-bold text-[#1E2B24] truncate">{mockWorkspace.name}</p>
-              <p className="text-[10px] text-[#52665B] font-medium mt-0.5">{mockWorkspace.members.length} Members</p>
+              <p className="text-xs font-bold text-[#1E2B24] truncate">{workspaceName}</p>
+              <p className="text-[10px] text-[#52665B] font-medium mt-0.5">Workspace Settings</p>
             </div>
             <ChevronDown className="w-4 h-4 text-[#52665B] shrink-0" />
-          </div>
+          </Link>
 
           {/* Clean Navigation Links */}
           <nav className="flex flex-col gap-1.5 mt-2">

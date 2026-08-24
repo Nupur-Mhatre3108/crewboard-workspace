@@ -1,21 +1,75 @@
 import React, { useState } from 'react';
-import { Plus, Mail, Shield, UserCheck } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { Plus, Mail, Shield, Users } from 'lucide-react';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
-import { mockMembers, mockWorkspace } from '../data/mockData';
+import useModal from '../hooks/useModal';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 export default function TeamPage() {
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
+  const outletCtx = useOutletContext();
+  const searchQuery = outletCtx?.searchQuery || '';
+  const filterItems = outletCtx?.filterItems;
+
+  const [members, setMembers] = useState([]);
+  
+  const {
+    isOpen: isInviteModalOpen,
+    openModal: openInviteModal,
+    closeModal: closeInviteModal,
+  } = useModal(false);
+
+  const [inviteName, setInviteName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('Member');
 
+  // Filter members by shared search query
+  const searchedMembers = React.useMemo(() => {
+    if (!searchQuery.trim()) return members;
+    if (filterItems) {
+      return filterItems(members, ['name', 'email', 'role']);
+    }
+    const q = searchQuery.trim().toLowerCase();
+    return members.filter(
+      (m) =>
+        m.name?.toLowerCase().includes(q) ||
+        m.email?.toLowerCase().includes(q) ||
+        m.role?.toLowerCase().includes(q)
+    );
+  }, [members, searchQuery, filterItems]);
+
   const handleInvite = (e) => {
     e.preventDefault();
-    // Experiment 1 UI only
-    setIsInviteModalOpen(false);
+    if (!inviteEmail.trim()) return;
+
+    const memberName = inviteName.trim() || inviteEmail.split('@')[0];
+    const initials = memberName.charAt(0).toUpperCase();
+
+    // Assign a solid pastel color based on initials
+    const colorPalette = ['#2D5A45', '#F4B89B', '#B5D0AF', '#C7B8DF', '#A2C0D4'];
+    const assignedColor = colorPalette[members.length % colorPalette.length];
+    const textColor = assignedColor === '#2D5A45' ? '#FFFFFF' : '#1E2B24';
+
+    const newMember = {
+      id: `usr_${Date.now()}`,
+      name: memberName,
+      email: inviteEmail.trim(),
+      role: inviteRole,
+      initials,
+      color: assignedColor,
+      textColor,
+      status: members.length === 0 ? 'Owner' : 'Member',
+    };
+
+    setMembers((prev) => [...prev, newMember]);
+    setInviteName('');
     setInviteEmail('');
+    closeInviteModal();
   };
+
+  const isSearchActive = Boolean(searchQuery.trim());
 
   return (
     <div className="flex flex-col gap-8 max-w-5xl mx-auto font-sans">
@@ -27,7 +81,7 @@ export default function TeamPage() {
               Team Roster
             </span>
             <span className="text-xs font-semibold text-[#52665B]">
-              {mockMembers.length} Members Connected
+              {workspaceName}
             </span>
           </div>
 
@@ -43,47 +97,78 @@ export default function TeamPage() {
           variant="primary"
           size="md"
           leftIcon={<Plus className="w-4 h-4" />}
-          onClick={() => setIsInviteModalOpen(true)}
+          onClick={openInviteModal}
           className="font-bold px-5 py-2.5 shrink-0"
         >
           Invite Member
         </Button>
       </div>
 
-      {/* Team Member Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {mockMembers.map((member) => (
-          <div
-            key={member.id}
-            className="bg-[#F3F7F0] p-5 rounded-3xl border border-[#E0E8DC] flex items-center justify-between gap-4 text-left transition-transform hover:-translate-y-0.5"
-          >
-            <div className="flex items-center gap-3.5 min-w-0">
-              {/* Initials Circle */}
-              <div
-                style={{ backgroundColor: member.color, color: member.textColor }}
-                className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-extrabold shadow-xs shrink-0 select-none"
-              >
-                {member.initials}
-              </div>
-
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-serif text-base font-bold text-[#1E2B24] truncate">
-                    {member.name}
-                  </h3>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                    member.status === 'Owner' ? 'bg-[#2D5A45] text-white' : 'bg-[#DCE8D7] text-[#1E2B24]'
-                  }`}>
-                    {member.status}
-                  </span>
+      {/* Members Grid or Empty State */}
+      {searchedMembers.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {searchedMembers.map((member) => (
+            <div
+              key={member.id}
+              className="bg-[#F3F7F0] p-5 rounded-3xl border border-[#E0E8DC] flex items-center justify-between gap-4 text-left transition-transform hover:-translate-y-0.5"
+            >
+              <div className="flex items-center gap-3.5 min-w-0">
+                {/* Initials Circle */}
+                <div
+                  style={{ backgroundColor: member.color, color: member.textColor }}
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-extrabold shadow-xs shrink-0 select-none"
+                >
+                  {member.initials}
                 </div>
-                <p className="text-xs text-[#52665B] font-medium mt-0.5">{member.role}</p>
-                <p className="text-[11px] text-[#52665B]/70 truncate">{member.email}</p>
+
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-serif text-base font-bold text-[#1E2B24] truncate">
+                      {member.name}
+                    </h3>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                      member.status === 'Owner' ? 'bg-[#2D5A45] text-white' : 'bg-[#DCE8D7] text-[#1E2B24]'
+                    }`}>
+                      {member.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#52665B] font-medium mt-0.5">{member.role}</p>
+                  <p className="text-[11px] text-[#52665B]/70 truncate">{member.email}</p>
+                </div>
               </div>
             </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-[#F3F7F0] rounded-3xl p-10 sm:p-14 border border-[#E0E8DC] text-center flex flex-col items-center justify-center gap-5">
+          <div className="w-14 h-14 rounded-2xl bg-[#DCE8D7] text-[#2D5A45] flex items-center justify-center">
+            <Users className="w-7 h-7" />
           </div>
-        ))}
-      </div>
+
+          <div className="max-w-md">
+            <h3 className="font-serif text-2xl font-bold text-[#1E2B24] tracking-tight">
+              {isSearchActive ? `No members matching "${searchQuery}"` : 'No members added yet'}
+            </h3>
+            <p className="text-xs sm:text-sm text-[#52665B] mt-1.5 font-medium leading-relaxed">
+              {isSearchActive 
+                ? 'Check your search query or clear the search to view all crew members.'
+                : 'Invite your teammates to start assigning sticky notes and collaborating on tasks.'}
+            </p>
+          </div>
+
+          {!isSearchActive && (
+            <Button
+              variant="primary"
+              size="md"
+              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={openInviteModal}
+              className="font-bold px-6 py-2.5"
+            >
+              Invite First Member
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Roles & Permissions Card */}
       <div className="bg-[#F3F7F0] rounded-3xl p-7 border border-[#E0E8DC] text-left">
@@ -112,7 +197,7 @@ export default function TeamPage() {
       {/* Invite Member Modal */}
       <Modal
         isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
+        onClose={closeInviteModal}
         title="Invite Crew Member"
         description="Send an invitation link to collaborate on this workspace."
         size="md"
@@ -121,7 +206,7 @@ export default function TeamPage() {
             <Button
               variant="outline"
               size="md"
-              onClick={() => setIsInviteModalOpen(false)}
+              onClick={closeInviteModal}
             >
               Cancel
             </Button>
@@ -136,6 +221,13 @@ export default function TeamPage() {
         }
       >
         <form onSubmit={handleInvite} className="flex flex-col gap-4">
+          <Input
+            label="Full Name"
+            placeholder="e.g. Anushka"
+            value={inviteName}
+            onChange={(e) => setInviteName(e.target.value)}
+          />
+
           <Input
             label="Student Email"
             type="email"

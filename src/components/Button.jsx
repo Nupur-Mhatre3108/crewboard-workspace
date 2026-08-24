@@ -32,7 +32,7 @@ export default function Button({
     secondary: 'bg-[#FFFDF8] text-[#1E2B24] border border-[#1E2B24] hover:bg-[#2D5A45] hover:text-white hover:border-[#2D5A45]',
     outline: 'bg-transparent text-[#1E2B24] border border-[#E0E8DC] hover:bg-[#DCE8D7]/40 hover:border-[#2D5A45]',
     ghost: 'text-[#1E2B24] hover:bg-[#DCE8D7]/50',
-    danger: 'bg-[#F4B89B] text-[#1E2B24] hover:bg-[#EAA787]',
+    danger: 'bg-[#DC2626] text-white hover:bg-[#B91C1C] shadow-sm',
   };
 
   return (

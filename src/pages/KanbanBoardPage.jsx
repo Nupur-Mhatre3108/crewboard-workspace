@@ -5,19 +5,64 @@ import KanbanColumn from '../components/KanbanColumn';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
-import { mockMembers, mockWorkspace, stickyNoteColors } from '../data/mockData';
+import useKanban from '../hooks/useKanban';
+import useModal from '../hooks/useModal';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { stickyNoteColors, currentUser } from '../utils/constants';
 
-export default function KanbanBoardPage() {
-  const context = useOutletContext();
+export default function KanbanBoardPage({ taskState, projects = [] }) {
+  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
+  const outletCtx = useOutletContext();
+  const searchQuery = outletCtx?.searchQuery || '';
+  const filterItems = outletCtx?.filterItems;
+  
+  // Use shared task state passed via props from App.jsx
+  const { tasks = [], createTask, moveTask, deleteTask } = taskState || {};
   const [activeFilter, setActiveFilter] = useState('All');
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState('todo');
 
-  // Task form state (UI only for Experiment 1)
+  const {
+    isOpen: isTaskModalOpen,
+    openModal: openTaskModal,
+    closeModal: closeTaskModal,
+  } = useModal(false);
+
+  // Task form state
   const [taskTitle, setTaskTitle] = useState('');
   const [taskPriority, setTaskPriority] = useState('Normal');
   const [taskColor, setTaskColor] = useState('sage');
   const [taskDueDate, setTaskDueDate] = useState('');
+
+  // 1. Filter tasks based on activeFilter chip
+  const chipFilteredTasks = React.useMemo(() => {
+    if (activeFilter === 'All') return tasks;
+    if (activeFilter === 'Urgent') return tasks.filter((t) => t.priority === 'Urgent');
+    if (activeFilter === 'Sage') return tasks.filter((t) => t.colorKey === 'sage');
+    if (activeFilter === 'Butter') return tasks.filter((t) => t.colorKey === 'butter');
+    if (activeFilter === 'Peach') return tasks.filter((t) => t.colorKey === 'peach');
+    if (activeFilter === 'Lavender') return tasks.filter((t) => t.colorKey === 'lavender');
+    if (activeFilter === 'My Notes') return tasks.filter((t) => t.assignee?.name === currentUser.name);
+    return tasks;
+  }, [tasks, activeFilter]);
+
+  // 2. Filter tasks based on global searchQuery (title, priority, assignee, columnId)
+  const searchAndChipFilteredTasks = React.useMemo(() => {
+    if (!searchQuery.trim()) return chipFilteredTasks;
+    if (filterItems) {
+      return filterItems(chipFilteredTasks, ['title', 'priority', 'assignee', 'columnId', 'colorKey']);
+    }
+    const q = searchQuery.trim().toLowerCase();
+    return chipFilteredTasks.filter((t) => {
+      const titleMatch = t.title?.toLowerCase().includes(q);
+      const priorityMatch = t.priority?.toLowerCase().includes(q);
+      const colMatch = t.columnId?.toLowerCase().includes(q);
+      const assigneeMatch = typeof t.assignee === 'object' ? t.assignee?.name?.toLowerCase().includes(q) : false;
+      return titleMatch || priorityMatch || colMatch || assigneeMatch;
+    });
+  }, [chipFilteredTasks, searchQuery, filterItems]);
+
+  // 3. Group filtered tasks using useKanban (counts automatically reflect filtered tasks!)
+  const { todoTasks, inProgressTasks, doneTasks } = useKanban(searchAndChipFilteredTasks);
 
   const filterChips = [
     'All',
@@ -31,14 +76,28 @@ export default function KanbanBoardPage() {
 
   const handleOpenAddTask = (columnId = 'todo') => {
     setSelectedColumn(columnId);
-    setIsTaskModalOpen(true);
+    openTaskModal();
   };
 
   const handleCreateTask = (e) => {
     e.preventDefault();
-    // Experiment 1 UI placeholder: closes modal without persisting
-    setIsTaskModalOpen(false);
+    if (!taskTitle.trim()) return;
+
+    if (createTask) {
+      createTask({
+        title: taskTitle.trim(),
+        columnId: selectedColumn,
+        priority: taskPriority,
+        colorKey: taskColor,
+        dueDate: taskDueDate.trim(),
+        assignee: currentUser,
+        projectId: projects[0]?.id || null,
+      });
+    }
+
     setTaskTitle('');
+    setTaskDueDate('');
+    closeTaskModal();
   };
 
   return (
@@ -51,7 +110,7 @@ export default function KanbanBoardPage() {
               Kanban Board
             </span>
             <span className="text-xs font-semibold text-[#52665B]">
-              {mockWorkspace.name}
+              {workspaceName}
             </span>
           </div>
 
@@ -64,20 +123,6 @@ export default function KanbanBoardPage() {
         </div>
 
         <div className="flex items-center gap-4 shrink-0">
-          {/* Team Initials Stack */}
-          <div className="flex items-center -space-x-1.5">
-            {mockMembers.map((member) => (
-              <div
-                key={member.id}
-                title={`${member.name} (${member.role})`}
-                style={{ backgroundColor: member.color, color: member.textColor }}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ring-2 ring-[#FFFDF8] select-none shadow-xs"
-              >
-                {member.initials}
-              </div>
-            ))}
-          </div>
-
           <Button
             variant="primary"
             size="md"
@@ -90,7 +135,7 @@ export default function KanbanBoardPage() {
         </div>
       </div>
 
-      {/* Filter Row (UI Placeholders) */}
+      {/* Filter Row */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#52665B] mr-2">
@@ -119,41 +164,50 @@ export default function KanbanBoardPage() {
         <div className="text-xs font-bold text-[#52665B]">
           <span>3 Columns</span>
           <span className="mx-2">•</span>
-          <span>0 Tasks</span>
+          <span>
+            {searchAndChipFilteredTasks.length} {searchQuery.trim() ? 'Matched' : 'Total'}{' '}
+            {searchAndChipFilteredTasks.length === 1 ? 'Note' : 'Notes'}
+          </span>
         </div>
       </div>
 
-      {/* 3 Empty Columns (To Do, In Progress, Done) */}
+      {/* 3 Columns (To Do, In Progress, Done) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
         {/* TO DO Column */}
         <KanbanColumn
           columnId="todo"
           title="To Do"
-          tasks={[]}
+          tasks={todoTasks}
           onAddTask={handleOpenAddTask}
+          onMoveTask={moveTask}
+          onDeleteTask={deleteTask}
         />
 
         {/* IN PROGRESS Column */}
         <KanbanColumn
           columnId="in_progress"
           title="In Progress"
-          tasks={[]}
+          tasks={inProgressTasks}
           onAddTask={handleOpenAddTask}
+          onMoveTask={moveTask}
+          onDeleteTask={deleteTask}
         />
 
         {/* DONE Column */}
         <KanbanColumn
           columnId="done"
           title="Done"
-          tasks={[]}
+          tasks={doneTasks}
           onAddTask={handleOpenAddTask}
+          onMoveTask={moveTask}
+          onDeleteTask={deleteTask}
         />
       </div>
 
-      {/* Task Creation Modal (UI Placeholder for Experiment 1) */}
+      {/* Task Creation Modal */}
       <Modal
         isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
+        onClose={closeTaskModal}
         title="Add Task Note"
         description="Pin a sticky note to the board."
         size="md"
@@ -162,7 +216,7 @@ export default function KanbanBoardPage() {
             <Button
               variant="outline"
               size="md"
-              onClick={() => setIsTaskModalOpen(false)}
+              onClick={closeTaskModal}
             >
               Cancel
             </Button>
@@ -217,7 +271,7 @@ export default function KanbanBoardPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            {/* Sticky Note Color (Only the 5 specified colors) */}
+            {/* Sticky Note Color */}
             <div className="flex flex-col gap-1.5 text-left">
               <label className="text-xs font-bold uppercase tracking-wider text-[#1E2B24]">Sticky Note Color</label>
               <select
@@ -241,28 +295,6 @@ export default function KanbanBoardPage() {
               value={taskDueDate}
               onChange={(e) => setTaskDueDate(e.target.value)}
             />
-          </div>
-
-          {/* Assignee Selection */}
-          <div className="flex flex-col gap-1.5 text-left">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#1E2B24]">Assignee</label>
-            <div className="flex items-center gap-2 pt-1">
-              {mockMembers.map((member) => (
-                <button
-                  type="button"
-                  key={member.id}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[#1E2B24]/15 bg-[#F3F7F0] hover:bg-[#DCE8D7] text-xs font-bold text-[#1E2B24] transition-colors"
-                >
-                  <div
-                    style={{ backgroundColor: member.color, color: member.textColor }}
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-extrabold"
-                  >
-                    {member.initials}
-                  </div>
-                  <span>{member.name}</span>
-                </button>
-              ))}
-            </div>
           </div>
         </form>
       </Modal>

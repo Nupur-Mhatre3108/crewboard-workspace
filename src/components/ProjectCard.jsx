@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Trash2 } from 'lucide-react';
 import Button from './Button';
 
 /**
- * Editorial Project Card Component
+ * Editorial Project Card Component with Hover Delete Action
  */
-export default function ProjectCard({ project, onOpenBoard }) {
+export default function ProjectCard({ project, onOpenBoard, onDelete }) {
   if (!project) return null;
 
   const {
@@ -19,7 +19,23 @@ export default function ProjectCard({ project, onOpenBoard }) {
   } = project;
 
   return (
-    <div className="bg-[#F3F7F0] rounded-3xl p-7 border border-[#E0E8DC] flex flex-col md:flex-row md:items-center justify-between gap-6 font-sans">
+    <div className="relative group bg-[#F3F7F0] rounded-3xl p-7 border border-[#E0E8DC] flex flex-col md:flex-row md:items-center justify-between gap-6 font-sans text-left transition-all">
+      {/* Delete Project Action Button (Visible on Hover) */}
+      {onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(project);
+          }}
+          className="absolute top-5 right-5 w-8 h-8 rounded-xl bg-white text-[#52665B] hover:text-[#DC2626] hover:bg-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-xs border border-[#E0E8DC] z-10"
+          title="Delete Project"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      )}
+
       <div className="flex flex-col gap-3 max-w-xl text-left">
         <div className="flex items-center gap-3">
           <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#2D5A45] text-white">

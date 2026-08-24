@@ -1,12 +1,12 @@
 import React from 'react';
 import { Search, Bell, Plus, Menu } from 'lucide-react';
 import Button from './Button';
-import { currentUser } from '../data/mockData';
+import { currentUser } from '../utils/constants';
 
 /**
  * Top Navbar Component
  */
-export default function Navbar({ onOpenNewTask, onToggleSidebar }) {
+export default function Navbar({ onOpenNewTask, onToggleSidebar, searchQuery = '', onSearchChange }) {
   return (
     <header className="sticky top-0 z-30 bg-[#FFFDF8] border-b border-[#E0E8DC] px-6 py-3.5 flex items-center justify-between gap-4 font-sans">
       {/* Left: Mobile Menu & Clean Floating Search */}
@@ -28,6 +28,8 @@ export default function Navbar({ onOpenNewTask, onToggleSidebar }) {
           </div>
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
             placeholder="Search workspace..."
             className="w-full bg-[#FFFDF8] text-xs sm:text-sm text-[#1E2B24] placeholder:text-[#52665B]/60 pl-9 pr-12 py-2 rounded-[14px] border border-[#1E2B24]/15 focus:outline-none focus:border-[#2D5A45] transition-colors"
           />
@@ -49,15 +51,17 @@ export default function Navbar({ onOpenNewTask, onToggleSidebar }) {
         </button>
 
         {/* Primary Action Button */}
-        <Button
-          variant="primary"
-          size="sm"
-          leftIcon={<Plus className="w-4 h-4" />}
-          onClick={onOpenNewTask}
-          className="rounded-xl px-4 py-2"
-        >
-          <span>New Task</span>
-        </Button>
+        {onOpenNewTask && (
+          <Button
+            variant="primary"
+            size="sm"
+            leftIcon={<Plus className="w-4 h-4" />}
+            onClick={onOpenNewTask}
+            className="rounded-xl px-4 py-2"
+          >
+            <span>New Task</span>
+          </Button>
+        )}
 
         {/* User Initial Avatar */}
         <div className="flex items-center pl-2 border-l border-[#E0E8DC]">

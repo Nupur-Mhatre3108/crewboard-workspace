@@ -11,6 +11,8 @@ export default function KanbanColumn({
   tasks = [],
   onAddTask,
   onTaskClick,
+  onMoveTask,
+  onDeleteTask,
 }) {
   return (
     <div className="flex flex-col flex-1 min-w-[300px] max-w-full bg-[#F3F7F0] rounded-3xl p-5 border border-[#E0E8DC] font-sans">
@@ -40,6 +42,8 @@ export default function KanbanColumn({
             key={task.id} 
             task={task} 
             onClick={onTaskClick}
+            onMoveTask={onMoveTask}
+            onDeleteTask={onDeleteTask}
           />
         ))}
 

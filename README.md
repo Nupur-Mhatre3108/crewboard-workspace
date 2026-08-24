@@ -1,28 +1,25 @@
-# CrewBoard
+# 🌿 CrewBoard
 
-A minimalist collaborative Kanban workspace built for student project teams to organize tasks, milestones, and sprint planning.
+A minimalist collaborative Kanban workspace built with **React**, **Vite**, and **Tailwind CSS** for managing team projects, tasks, and sprint milestones.
 
-This repository contains the **UI Foundation** of CrewBoard, including the complete frontend layout, reusable components, routing, and workspace pages.
-
-## Preview
-
-CrewBoard currently includes:
-
-- Landing page
-- Login & Registration pages
-- Dashboard workspace
-- Kanban board
-- Projects page
-- Team page
-- Workspace Settings page
+CrewBoard is being developed incrementally as a full-stack MERN application while maintaining a clean, stationery-inspired UI.
 
 ## Tech Stack
 
-- React 19
-- Vite
-- Tailwind CSS
-- React Router
-- JavaScript (ES6)
+* React
+* Vite
+* Tailwind CSS
+* React Router
+* JavaScript (ES6)
+
+## Features (Current)
+
+* Collaborative workspace dashboard.
+* Kanban board with To Do, In Progress, and Done columns.
+* Project management workspace.
+* Team member management.
+* Workspace settings with local persistence.
+* Global search across workspace content.
 
 ## Project Structure
 
@@ -31,9 +28,9 @@ CrewBoard/
 ├── src/
 │   ├── assets/
 │   ├── components/
+│   ├── hooks/
 │   ├── layouts/
 │   ├── pages/
-│   ├── data/
 │   ├── services/
 │   ├── utils/
 │   ├── App.jsx
@@ -46,49 +43,17 @@ CrewBoard/
 
 ## Getting Started
 
-1. Clone the repository.
-
-```bash
-git clone https://github.com/Nupur-Mhatre31/crewboard-kanban-workspace.git
-```
-
-2. Install dependencies.
-
 ```bash
 npm install
-```
-
-3. Start the development server.
-
-```bash
 npm run dev
 ```
 
-The application will be available at:
+The development server runs at:
 
 ```text
 http://localhost:5173
 ```
 
-## Current Progress
+---
 
-- [x] UI design system
-- [x] Responsive workspace layout
-- [x] Authentication screens
-- [x] Dashboard UI
-- [x] Kanban board UI
-- [x] Projects page UI
-- [x] Team page UI
-- [x] Workspace settings UI
-- [ ] State management
-- [ ] Backend API integration
-- [ ] Authentication
-- [ ] Database persistence
-- [ ] Drag-and-drop Kanban
-
-## Roadmap
-
-CrewBoard is being developed incrementally as a full-stack MERN application. Upcoming milestones include custom hooks, context-based state management, REST API integration, authentication, MongoDB persistence, and deployment.
-
-
-
+Built as a semester-long MERN project with each milestone adding functionality without redesigning the interface.

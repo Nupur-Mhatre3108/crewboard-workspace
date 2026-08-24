@@ -2,15 +2,36 @@ import React, { useState } from 'react';
 import { Sliders, Palette, Bell, Save } from 'lucide-react';
 import Button from '../components/Button';
 import Input from '../components/Input';
-import { mockWorkspace, stickyNoteColors } from '../data/mockData';
+import useLocalStorage from '../hooks/useLocalStorage';
+import { stickyNoteColors } from '../utils/constants';
 
 export default function SettingsPage() {
-  const [workspaceName, setWorkspaceName] = useState(mockWorkspace.name);
-  const [description, setDescription] = useState(mockWorkspace.description);
+  const [workspaceName, setWorkspaceName] = useLocalStorage(
+    'crewboard_workspace_name',
+    'CrewBoard Workspace'
+  );
+  const [description, setDescription] = useLocalStorage(
+    'crewboard_workspace_desc',
+    'Collaborative Kanban workspace for college project teams.'
+  );
+
+  const [formName, setFormName] = useState(workspaceName);
+  const [formDesc, setFormDesc] = useState(description);
   const [savedNotice, setSavedNotice] = useState(false);
+
+  // Sync state if localStorage changes
+  React.useEffect(() => {
+    setFormName(workspaceName);
+  }, [workspaceName]);
+
+  React.useEffect(() => {
+    setFormDesc(description);
+  }, [description]);
 
   const handleSave = (e) => {
     e.preventDefault();
+    setWorkspaceName(formName.trim() || 'CrewBoard Workspace');
+    setDescription(formDesc.trim() || 'Collaborative Kanban workspace for college project teams.');
     setSavedNotice(true);
     setTimeout(() => setSavedNotice(false), 2000);
   };
@@ -25,7 +46,7 @@ export default function SettingsPage() {
               Preferences
             </span>
             <span className="text-xs font-semibold text-[#52665B]">
-              {mockWorkspace.name}
+              {workspaceName}
             </span>
           </div>
 
@@ -60,14 +81,14 @@ export default function SettingsPage() {
 
           <Input
             label="Workspace Name"
-            value={workspaceName}
-            onChange={(e) => setWorkspaceName(e.target.value)}
+            value={formName}
+            onChange={(e) => setFormName(e.target.value)}
           />
 
           <Input
             label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={formDesc}
+            onChange={(e) => setFormDesc(e.target.value)}
           />
         </section>
 
