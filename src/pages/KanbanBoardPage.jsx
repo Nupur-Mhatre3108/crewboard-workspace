@@ -7,11 +7,11 @@ import Modal from '../components/Modal';
 import Input from '../components/Input';
 import useKanban from '../hooks/useKanban';
 import useModal from '../hooks/useModal';
-import useLocalStorage from '../hooks/useLocalStorage';
+import { useWorkspace } from '../context/WorkspaceContext';
 import { stickyNoteColors, currentUser } from '../utils/constants';
 
 export default function KanbanBoardPage({ taskState, projects = [] }) {
-  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
+  const { workspaceName } = useWorkspace();
   const outletCtx = useOutletContext();
   const searchQuery = outletCtx?.searchQuery || '';
   const filterItems = outletCtx?.filterItems;

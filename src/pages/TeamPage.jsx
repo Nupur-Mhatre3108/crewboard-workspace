@@ -5,10 +5,10 @@ import Button from '../components/Button';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
 import useModal from '../hooks/useModal';
-import useLocalStorage from '../hooks/useLocalStorage';
+import { useWorkspace } from '../context/WorkspaceContext';
 
 export default function TeamPage() {
-  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
+  const { workspaceName } = useWorkspace();
   const outletCtx = useOutletContext();
   const searchQuery = outletCtx?.searchQuery || '';
   const filterItems = outletCtx?.filterItems;

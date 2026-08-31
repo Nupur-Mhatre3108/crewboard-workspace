@@ -6,10 +6,10 @@ import Modal from '../components/Modal';
 import Input from '../components/Input';
 import ProjectCard from '../components/ProjectCard';
 import useModal from '../hooks/useModal';
-import useLocalStorage from '../hooks/useLocalStorage';
+import { useWorkspace } from '../context/WorkspaceContext';
 
 export default function ProjectsPage({ projects = [], createProject, deleteProject }) {
-  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
+  const { workspaceName } = useWorkspace();
   const outletCtx = useOutletContext();
   const searchQuery = outletCtx?.searchQuery || '';
   const filterItems = outletCtx?.filterItems;

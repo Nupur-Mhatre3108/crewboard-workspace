@@ -1,37 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sliders, Palette, Bell, Save } from 'lucide-react';
 import Button from '../components/Button';
 import Input from '../components/Input';
-import useLocalStorage from '../hooks/useLocalStorage';
+import { useWorkspace } from '../context/WorkspaceContext';
 import { stickyNoteColors } from '../utils/constants';
 
 export default function SettingsPage() {
-  const [workspaceName, setWorkspaceName] = useLocalStorage(
-    'crewboard_workspace_name',
-    'CrewBoard Workspace'
-  );
-  const [description, setDescription] = useLocalStorage(
-    'crewboard_workspace_desc',
-    'Collaborative Kanban workspace for college project teams.'
-  );
+  const {
+    workspaceName,
+    workspaceDescription,
+    updateWorkspaceName,
+    updateWorkspaceDescription,
+  } = useWorkspace();
 
   const [formName, setFormName] = useState(workspaceName);
-  const [formDesc, setFormDesc] = useState(description);
+  const [formDesc, setFormDesc] = useState(workspaceDescription);
   const [savedNotice, setSavedNotice] = useState(false);
 
-  // Sync state if localStorage changes
-  React.useEffect(() => {
+  // Sync state if context changes
+  useEffect(() => {
     setFormName(workspaceName);
   }, [workspaceName]);
 
-  React.useEffect(() => {
-    setFormDesc(description);
-  }, [description]);
+  useEffect(() => {
+    setFormDesc(workspaceDescription);
+  }, [workspaceDescription]);
 
   const handleSave = (e) => {
     e.preventDefault();
-    setWorkspaceName(formName.trim() || 'CrewBoard Workspace');
-    setDescription(formDesc.trim() || 'Collaborative Kanban workspace for college project teams.');
+    updateWorkspaceName(formName);
+    updateWorkspaceDescription(formDesc);
     setSavedNotice(true);
     setTimeout(() => setSavedNotice(false), 2000);
   };

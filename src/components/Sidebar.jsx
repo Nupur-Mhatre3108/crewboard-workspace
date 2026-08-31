@@ -2,13 +2,14 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { LogOut, ChevronDown } from 'lucide-react';
 import { currentUser } from '../utils/constants';
-import useLocalStorage from '../hooks/useLocalStorage';
+import { useWorkspace } from '../context/WorkspaceContext';
 
 /**
  * Solid Sage Sidebar Component
+ * Consumes WorkspaceContext directly for the workspace name.
  */
 export default function Sidebar({ isOpen = true, onClose }) {
-  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
+  const { workspaceName } = useWorkspace();
 
   const navItems = [
     { label: 'Dashboard', path: '/dashboard' },

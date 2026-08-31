@@ -6,12 +6,11 @@ import ProjectCard from '../components/ProjectCard';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
 import Input from '../components/Input';
+import WorkspaceHeader from '../components/WorkspaceHeader';
+import WorkspaceClock from '../components/WorkspaceClock';
 import useModal from '../hooks/useModal';
-import useLocalStorage from '../hooks/useLocalStorage';
-import { currentUser } from '../utils/constants';
 
 export default function DashboardPage({ taskState, projects = [], createProject, deleteProject }) {
-  const [workspaceName] = useLocalStorage('crewboard_workspace_name', 'CrewBoard Workspace');
   const outletCtx = useOutletContext();
   const searchQuery = outletCtx?.searchQuery || '';
   const filterItems = outletCtx?.filterItems;
@@ -105,27 +104,10 @@ export default function DashboardPage({ taskState, projects = [], createProject,
   ];
 
   return (
-    <div className="flex flex-col gap-10 max-w-5xl mx-auto font-sans">
-      {/* Editorial Header */}
+    <div className="flex flex-col gap-8 max-w-5xl mx-auto font-sans">
+      {/* 1. Context Consumer Header + Action Button */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#E0E8DC]">
-        <div className="flex flex-col gap-3 text-left">
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-md bg-[#2D5A45] text-white">
-              Workspace Overview
-            </span>
-            <span className="text-xs font-semibold text-[#52665B]">
-              {workspaceName}
-            </span>
-          </div>
-
-          <h1 className="font-serif text-4xl sm:text-5xl font-bold text-[#1E2B24] tracking-tight leading-tight">
-            Welcome, {currentUser.name}
-          </h1>
-
-          <p className="text-sm sm:text-base text-[#52665B] font-medium max-w-2xl">
-            This is your team's central workspace. Create a project to start planning milestones on the Kanban board.
-          </p>
-        </div>
+        <WorkspaceHeader />
 
         <div className="shrink-0 flex items-center gap-3">
           <Button
@@ -140,7 +122,12 @@ export default function DashboardPage({ taskState, projects = [], createProject,
         </div>
       </div>
 
-      {/* 4 Clean Metric Blocks */}
+      {/* 2. useEffect Demonstration Clock Component */}
+      <section>
+        <WorkspaceClock />
+      </section>
+
+      {/* 3. 4 Clean Metric Blocks */}
       <section>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {dynamicStats.map((stat) => (
@@ -154,7 +141,7 @@ export default function DashboardPage({ taskState, projects = [], createProject,
         </div>
       </section>
 
-      {/* Active Projects List or Empty State */}
+      {/* 4. Active Projects List or Empty State */}
       {filteredProjects.length > 0 ? (
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between px-1">
@@ -216,7 +203,7 @@ export default function DashboardPage({ taskState, projects = [], createProject,
         </section>
       )}
 
-      {/* Getting Started Guide Cards */}
+      {/* 5. Getting Started Guide Cards */}
       {!searchQuery.trim() && (
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
           <div className="bg-[#F3F7F0] p-6 rounded-3xl border border-[#E0E8DC] flex flex-col justify-between min-h-[160px]">
