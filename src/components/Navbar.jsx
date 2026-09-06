@@ -2,11 +2,15 @@ import React from 'react';
 import { Search, Bell, Plus, Menu } from 'lucide-react';
 import Button from './Button';
 import { currentUser } from '../utils/constants';
+import { useTaskContext } from '../context/TaskContext';
 
 /**
  * Top Navbar Component
+ * Displays global task counter from TaskContext
  */
 export default function Navbar({ onOpenNewTask, onToggleSidebar, searchQuery = '', onSearchChange }) {
+  const { totalTasks } = useTaskContext();
+
   return (
     <header className="sticky top-0 z-30 bg-[#FFFDF8] border-b border-[#E0E8DC] px-6 py-3.5 flex items-center justify-between gap-4 font-sans">
       {/* Left: Mobile Menu & Clean Floating Search */}
@@ -39,8 +43,17 @@ export default function Navbar({ onOpenNewTask, onToggleSidebar, searchQuery = '
         </div>
       </div>
 
-      {/* Right: Notifications, New Task CTA, User Initial */}
+      {/* Right: Total Tasks Counter, Notifications, New Task CTA, User Initial */}
       <div className="flex items-center gap-3 sm:gap-4">
+        {/* Global Total Tasks Counter from TaskContext */}
+        <div 
+          title="Total tasks in workspace"
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F3F7F0] border border-[#E0E8DC] text-xs font-bold text-[#1E2B24] select-none"
+        >
+          <span className="w-2 h-2 rounded-full bg-[#2D5A45]" />
+          <span>{totalTasks} {totalTasks === 1 ? 'Task' : 'Tasks'}</span>
+        </div>
+
         {/* Notification Bell Placeholder */}
         <button
           type="button"

@@ -8,16 +8,17 @@ import Input from '../components/Input';
 import useKanban from '../hooks/useKanban';
 import useModal from '../hooks/useModal';
 import { useWorkspace } from '../context/WorkspaceContext';
+import { useTaskContext } from '../context/TaskContext';
 import { stickyNoteColors, currentUser } from '../utils/constants';
 
-export default function KanbanBoardPage({ taskState, projects = [] }) {
+export default function KanbanBoardPage({ projects = [] }) {
   const { workspaceName } = useWorkspace();
   const outletCtx = useOutletContext();
   const searchQuery = outletCtx?.searchQuery || '';
   const filterItems = outletCtx?.filterItems;
   
-  // Use shared task state passed via props from App.jsx
-  const { tasks = [], createTask, moveTask, deleteTask } = taskState || {};
+  // Global Task State from TaskContext (Experiment 3)
+  const { tasks, addTask, moveTask, removeTask } = useTaskContext();
   const [activeFilter, setActiveFilter] = useState('All');
   const [selectedColumn, setSelectedColumn] = useState('todo');
 
@@ -55,7 +56,7 @@ export default function KanbanBoardPage({ taskState, projects = [] }) {
     return chipFilteredTasks.filter((t) => {
       const titleMatch = t.title?.toLowerCase().includes(q);
       const priorityMatch = t.priority?.toLowerCase().includes(q);
-      const colMatch = t.columnId?.toLowerCase().includes(q);
+      const colMatch = t.columnId?.toLowerCase().includes(q) || t.status?.toLowerCase().includes(q);
       const assigneeMatch = typeof t.assignee === 'object' ? t.assignee?.name?.toLowerCase().includes(q) : false;
       return titleMatch || priorityMatch || colMatch || assigneeMatch;
     });
@@ -83,10 +84,11 @@ export default function KanbanBoardPage({ taskState, projects = [] }) {
     e.preventDefault();
     if (!taskTitle.trim()) return;
 
-    if (createTask) {
-      createTask({
+    if (addTask) {
+      addTask({
         title: taskTitle.trim(),
         columnId: selectedColumn,
+        status: selectedColumn,
         priority: taskPriority,
         colorKey: taskColor,
         dueDate: taskDueDate.trim(),
@@ -180,7 +182,7 @@ export default function KanbanBoardPage({ taskState, projects = [] }) {
           tasks={todoTasks}
           onAddTask={handleOpenAddTask}
           onMoveTask={moveTask}
-          onDeleteTask={deleteTask}
+          onDeleteTask={removeTask}
         />
 
         {/* IN PROGRESS Column */}
@@ -190,7 +192,7 @@ export default function KanbanBoardPage({ taskState, projects = [] }) {
           tasks={inProgressTasks}
           onAddTask={handleOpenAddTask}
           onMoveTask={moveTask}
-          onDeleteTask={deleteTask}
+          onDeleteTask={removeTask}
         />
 
         {/* DONE Column */}
@@ -200,7 +202,7 @@ export default function KanbanBoardPage({ taskState, projects = [] }) {
           tasks={doneTasks}
           onAddTask={handleOpenAddTask}
           onMoveTask={moveTask}
-          onDeleteTask={deleteTask}
+          onDeleteTask={removeTask}
         />
       </div>
 

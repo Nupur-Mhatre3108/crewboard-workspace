@@ -9,16 +9,15 @@ import Input from '../components/Input';
 import WorkspaceHeader from '../components/WorkspaceHeader';
 import WorkspaceClock from '../components/WorkspaceClock';
 import useModal from '../hooks/useModal';
+import { useTaskContext } from '../context/TaskContext';
 
-export default function DashboardPage({ taskState, projects = [], createProject, deleteProject }) {
+export default function DashboardPage({ projects = [], createProject, deleteProject }) {
   const outletCtx = useOutletContext();
   const searchQuery = outletCtx?.searchQuery || '';
   const filterItems = outletCtx?.filterItems;
 
-  // Read dynamic task stats from shared taskState
-  const totalTasks = taskState?.totalTasks ?? 0;
-  const inProgressCount = taskState?.inProgressCount ?? 0;
-  const completedCount = taskState?.completedCount ?? 0;
+  // Global Task State from TaskContext (Experiment 3)
+  const { totalTasks, inProgressCount, completedCount } = useTaskContext();
 
   // Create Project Modal
   const {
@@ -127,7 +126,7 @@ export default function DashboardPage({ taskState, projects = [], createProject,
         <WorkspaceClock />
       </section>
 
-      {/* 3. 4 Clean Metric Blocks */}
+      {/* 3. 4 Clean Metric Blocks (Dynamic from TaskContext) */}
       <section>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {dynamicStats.map((stat) => (

@@ -9,12 +9,11 @@ import KanbanBoardPage from './pages/KanbanBoardPage';
 import ProjectsPage from './pages/ProjectsPage';
 import TeamPage from './pages/TeamPage';
 import SettingsPage from './pages/SettingsPage';
-import useTasks from './hooks/useTasks';
+import { useTaskContext } from './context/TaskContext';
 import { currentUser } from './utils/constants';
 
 export default function App() {
-  // Shared Task State (Initialized once at App root)
-  const taskState = useTasks([]);
+  const { setTasks } = useTaskContext();
 
   // Shared Project State (Initialized once at App root)
   const [projects, setProjects] = useState([]);
@@ -37,9 +36,8 @@ export default function App() {
 
   const deleteProject = (projectId) => {
     setProjects((prev) => prev.filter((p) => p.id !== projectId));
-    if (taskState && taskState.setTasks) {
-      // Remove all tasks associated with this project
-      taskState.setTasks((prev) => prev.filter((t) => t.projectId !== projectId));
+    if (setTasks) {
+      setTasks((prev) => prev.filter((t) => t.projectId !== projectId));
     }
   };
 
@@ -51,13 +49,12 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Authenticated Workspace App Routes with Shared State Props */}
+        {/* Authenticated Workspace App Routes with TaskContext */}
         <Route element={<AppLayout />}>
           <Route 
             path="/dashboard" 
             element={
               <DashboardPage 
-                taskState={taskState} 
                 projects={projects} 
                 createProject={createProject} 
                 deleteProject={deleteProject}
@@ -68,7 +65,6 @@ export default function App() {
             path="/board" 
             element={
               <KanbanBoardPage 
-                taskState={taskState}
                 projects={projects}
               />
             } 
