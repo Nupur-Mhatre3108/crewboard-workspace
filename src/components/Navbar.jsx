@@ -3,13 +3,16 @@ import { Search, Bell, Plus, Menu } from 'lucide-react';
 import Button from './Button';
 import { currentUser } from '../utils/constants';
 import { useTaskContext } from '../context/TaskContext';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Top Navbar Component
- * Displays global task counter from TaskContext
+ * Displays global task counter from TaskContext and current user avatar
  */
 export default function Navbar({ onOpenNewTask, onToggleSidebar, searchQuery = '', onSearchChange }) {
   const { totalTasks } = useTaskContext();
+  const { user } = useAuth();
+  const activeUser = user || currentUser;
 
   return (
     <header className="sticky top-0 z-30 bg-[#FFFDF8] border-b border-[#E0E8DC] px-6 py-3.5 flex items-center justify-between gap-4 font-sans">
@@ -79,11 +82,11 @@ export default function Navbar({ onOpenNewTask, onToggleSidebar, searchQuery = '
         {/* User Initial Avatar */}
         <div className="flex items-center pl-2 border-l border-[#E0E8DC]">
           <div
-            title={currentUser.name}
-            style={{ backgroundColor: currentUser.color, color: currentUser.textColor }}
+            title={activeUser.name}
+            style={{ backgroundColor: activeUser.color || '#2D5A45', color: activeUser.textColor || '#FFFFFF' }}
             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-xs select-none"
           >
-            {currentUser.initials}
+            {activeUser.initials}
           </div>
         </div>
       </div>

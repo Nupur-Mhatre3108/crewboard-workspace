@@ -3,17 +3,47 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { useAuth } from '../context/AuthContext';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [name, setName] = useState('');
   const [university, setUniversity] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError('');
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        course: university,
+      });
+
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.message || 'Registration failed. Please check your details.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -41,6 +71,12 @@ export default function RegisterPage() {
             Create an account to collaborate on team milestones.
           </p>
         </div>
+
+        {error && (
+          <div className="mb-5 p-3 rounded-2xl bg-[#FDF2F2] border border-[#F8B4B4] text-[#9B1C1C] text-xs font-semibold">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
@@ -83,10 +119,11 @@ export default function RegisterPage() {
             type="submit"
             variant="primary"
             size="lg"
+            disabled={isSubmitting}
             rightIcon={<ArrowUpRight className="w-4 h-4" />}
             className="w-full mt-2 font-bold shadow-sm"
           >
-            Create Account
+            {isSubmitting ? 'Creating Account...' : 'Create Account'}
           </Button>
         </form>
       </div>

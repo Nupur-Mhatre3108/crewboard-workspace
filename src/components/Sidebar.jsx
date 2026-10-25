@@ -3,13 +3,16 @@ import { NavLink, Link } from 'react-router-dom';
 import { LogOut, ChevronDown } from 'lucide-react';
 import { currentUser } from '../utils/constants';
 import { useWorkspace } from '../context/WorkspaceContext';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Solid Sage Sidebar Component
- * Consumes WorkspaceContext directly for the workspace name.
+ * Consumes WorkspaceContext and AuthContext
  */
 export default function Sidebar({ isOpen = true, onClose }) {
   const { workspaceName } = useWorkspace();
+  const { user, logout } = useAuth();
+  const activeUser = user || currentUser;
 
   const navItems = [
     { label: 'Dashboard', path: '/dashboard' },
@@ -90,20 +93,21 @@ export default function Sidebar({ isOpen = true, onClose }) {
         <div className="pt-4 border-t border-[#C6D6C0] flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <div 
-              style={{ backgroundColor: currentUser.color, color: currentUser.textColor }}
+              style={{ backgroundColor: activeUser.color || '#2D5A45', color: activeUser.textColor || '#FFFFFF' }}
               className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-xs shrink-0 select-none"
             >
-              {currentUser.initials}
+              {activeUser.initials}
             </div>
             <div className="truncate">
-              <p className="text-xs font-bold text-[#1E2B24] truncate">{currentUser.name}</p>
-              <p className="text-[10px] text-[#52665B] truncate">{currentUser.role}</p>
+              <p className="text-xs font-bold text-[#1E2B24] truncate">{activeUser.name}</p>
+              <p className="text-[10px] text-[#52665B] truncate">{activeUser.role}</p>
             </div>
           </div>
 
           <Link
             to="/login"
             title="Sign Out"
+            onClick={() => logout && logout()}
             className="text-[#52665B] hover:text-[#1E2B24] p-2 rounded-lg hover:bg-[#FFFDF8] transition-colors shrink-0"
           >
             <LogOut className="w-4 h-4" />

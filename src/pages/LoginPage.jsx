@@ -3,15 +3,43 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('nupur@crewboard.dev');
-  const [password, setPassword] = useState('password123');
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError('');
+
+    if (!email || !password) {
+      setError('Please provide both email and password.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await login({
+        email: email.trim(),
+        password,
+      });
+
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.message || 'Invalid email or password.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -40,6 +68,12 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {error && (
+          <div className="mb-5 p-3 rounded-2xl bg-[#FDF2F2] border border-[#F8B4B4] text-[#9B1C1C] text-xs font-semibold">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <Input
             label="Email Address"
@@ -63,10 +97,11 @@ export default function LoginPage() {
             type="submit"
             variant="primary"
             size="lg"
+            disabled={isSubmitting}
             rightIcon={<ArrowUpRight className="w-4 h-4" />}
             className="w-full mt-2 font-bold shadow-sm"
           >
-            Enter Workspace
+            {isSubmitting ? 'Entering Workspace...' : 'Enter Workspace'}
           </Button>
         </form>
       </div>

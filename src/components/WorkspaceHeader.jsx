@@ -1,13 +1,16 @@
 import React from 'react';
 import { useWorkspace } from '../context/WorkspaceContext';
+import { useAuth } from '../context/AuthContext';
 import { currentUser } from '../utils/constants';
 
 /**
  * Standalone useContext Consumer Component
- * Consumes WorkspaceContext directly with zero props.
+ * Consumes WorkspaceContext and AuthContext directly with zero props.
  */
 export default function WorkspaceHeader() {
   const { workspaceName, workspaceDescription } = useWorkspace();
+  const { user } = useAuth();
+  const displayName = user?.name || currentUser.name;
 
   return (
     <div className="flex flex-col gap-3 text-left font-sans">
@@ -21,7 +24,7 @@ export default function WorkspaceHeader() {
       </div>
 
       <h1 className="font-serif text-4xl sm:text-5xl font-bold text-[#1E2B24] tracking-tight leading-tight">
-        Welcome, {currentUser.name}
+        Welcome, {displayName}
       </h1>
 
       <p className="text-sm sm:text-base text-[#52665B] font-medium max-w-2xl">
