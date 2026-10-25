@@ -1,137 +1,272 @@
 # 🌿 CrewBoard — Collaborative Kanban Platform
 
-> **A minimal, physical-inspired Kanban task management workspace for student project teams and semester milestones.**  
+> **A minimal, physical-inspired Kanban task management workspace for student project teams and semester milestones.**
 > *Vibe:* Pinterest × Notion × Milanote × Apple Notes (tactile, solid colors, editorial typography, calming).
+
+CrewBoard is a collaborative task management platform designed to help student teams organize projects, manage tasks, track progress, and maintain a shared workspace. It combines an intuitive React interface with a Node.js and Express backend, MongoDB persistence, and secure authentication.
 
 ---
 
-## 📌 Experiment 3 Milestone — State Management using React Context API
+## ✨ Features
 
-This repository represents **Experiment 3 of a 10-experiment MERN progression**. It establishes centralized global state providers using React Context API (`TaskContext` & `WorkspaceContext`) while preserving the Experiment 1 & 2 UI foundation, custom hooks, and stationery design system.
+- **Interactive Kanban Board:** Organize tasks into To Do, In Progress, and Done columns.
+- **Task Management:** Create, update, move, and delete tasks.
+- **Workspace Dashboard:** View task statistics and track project progress.
+- **Project Management:** Create and manage projects within the workspace.
+- **Team Workspace:** Organize team information and member-related activities.
+- **Global State Management:** Share task and workspace data using React Context API.
+- **Persistent Workspace Settings:** Save workspace preferences across browser reloads.
+- **User Authentication:** Register and log in using email and password.
+- **JWT-Based Security:** Protect backend endpoints using token verification.
+- **Role-Based Authorization:** Restrict administrative operations according to user roles.
+- **Responsive Interface:** Navigate a clean, stationery-inspired workspace.
+- **Docker Support:** Run the frontend and backend using Docker Compose.
 
 ---
 
 ## 🎨 Solid Color System & Typography
 
 ### Solid Color Palette
-- **Canvas Background**: `#FFFDF8` (warm off-white cream)
-- **Sidebar Canvas**: `#DCE8D7` (solid refined sage)
-- **Primary Brand & Buttons**: `#2D5A45` (deep forest / eucalyptus)
-- **Text Primary**: `#1E2B24` (deep charcoal-green)
-- **Card Paper Surface**: `#F3F7F0` (light sage paper)
-- **Pastel Sticky Note Colors**:
-  - 🌿 **Sage**: `#B5D0AF`
-  - 🧈 **Butter Yellow**: `#F7EBAA`
-  - 🍑 **Peach**: `#F4B89B`
-  - 🪻 **Lavender**: `#C7B8DF`
-  - 🌊 **Powder Blue**: `#A2C0D4`
+
+- **Canvas Background:** `#FFFDF8` (warm off-white cream)
+- **Sidebar Canvas:** `#DCE8D7` (solid refined sage)
+- **Primary Brand & Buttons:** `#2D5A45` (deep forest / eucalyptus)
+- **Text Primary:** `#1E2B24` (deep charcoal-green)
+- **Card Paper Surface:** `#F3F7F0` (light sage paper)
+- **Pastel Sticky Note Colors:**
+  - 🌿 **Sage:** `#B5D0AF`
+  - 🧈 **Butter Yellow:** `#F7EBAA`
+  - 🍑 **Peach:** `#F4B89B`
+  - 🪻 **Lavender:** `#C7B8DF`
+  - 🌊 **Powder Blue:** `#A2C0D4`
 
 ### Typography
-- **Headings & Serif Accents**: `Fraunces`
-- **Body, UI, Navigation, Buttons**: `Manrope`
+
+- **Headings & Serif Accents:** Fraunces
+- **Body, UI, Navigation, Buttons:** Manrope
 
 ---
 
-## 🌐 Context Providers (`src/context/`)
+## 🛠️ Technology Stack
 
-| Context Provider | File | Primary Responsibility |
-| :--- | :--- | :--- |
-| **`TaskProvider`** | `TaskContext.jsx` | Global task collection, `addTask()`, `removeTask()`, `moveTask()`, `updateTask()`, and reactive metrics (`totalTasks`, `inProgressCount`, `completedCount`). Consumed in Navbar, Dashboard, and Kanban Board. |
-| **`WorkspaceProvider`** | `WorkspaceContext.jsx` | Global workspace metadata (`workspaceName`, `workspaceDescription`, `updateWorkspaceName`, `updateWorkspaceDescription`) backed by `useLocalStorage`. Consumed in WorkspaceHeader, Sidebar, Settings, and pages. |
+| Layer             | Technologies                    |
+| ----------------- | ------------------------------- |
+| Frontend          | React, Vite, JavaScript         |
+| Styling           | Tailwind CSS, custom CSS        |
+| Routing           | React Router                    |
+| State Management  | React Context API, custom hooks |
+| Backend           | Node.js, Express.js             |
+| Database          | MongoDB, Mongoose               |
+| Authentication    | JWT                             |
+| Password Security | bcrypt / bcryptjs               |
+| Containerization  | Docker, Docker Compose          |
+| Version Control   | Git, GitHub                     |
 
 ---
 
-## 🛠️ Custom React Hooks (`src/hooks/`)
+## 🧠 State Management
 
-| Hook | File | Primary Responsibility |
-| :--- | :--- | :--- |
-| **`useModal`** | `useModal.js` | Modal open/close/toggle lifecycle across Dashboard, Kanban, Projects, and Team dialogs. |
-| **`useKanban`** | `useKanban.js` | Groups tasks by column (`todo`, `in_progress`, `done`) and computes column counts. |
-| **`useSearch`** | `useSearch.js` | Case-insensitive multi-field search and filter logic. |
-| **`useLocalStorage`** | `useLocalStorage.js` | Persists workspace preferences (name & description) across browser reloads. |
+CrewBoard uses React Context API to manage shared application state across components.
+
+| Context Provider    | Primary Responsibility                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `TaskProvider`      | Manages the global task collection and task operations such as adding, removing, moving, and updating tasks. |
+| `WorkspaceProvider` | Manages workspace metadata, including the workspace name and description, with local-storage persistence.    |
+| `AuthProvider`      | Manages frontend authentication state and integrates with the authentication service.                        |
+
+These providers help components access shared data without passing props through multiple intermediate components.
+
+---
+
+## 🪝 Custom React Hooks
+
+| Hook              | Primary Responsibility                                 |
+| ----------------- | ------------------------------------------------------ |
+| `useModal`        | Manages modal open, close, and toggle behavior.        |
+| `useKanban`       | Groups tasks by column and calculates column counts.   |
+| `useSearch`       | Provides case-insensitive search and filtering.        |
+| `useLocalStorage` | Persists workspace preferences across browser reloads. |
+
+---
+
+## 🔐 Authentication & Authorization
+
+CrewBoard supports account registration and login with backend authentication.
+
+- User passwords are hashed before storage.
+- Successful login generates a JWT authentication token.
+- Authentication middleware verifies tokens before granting access to protected endpoints.
+- Role-based authorization restricts administrative operations.
+- Invalid, missing, and expired tokens are rejected.
+- Request validation, error handling, and rate limiting provide additional safeguards.
+
+**Security:** Store database credentials and authentication secrets in environment variables. Never commit `.env` files or real credentials to the repository.
 
 ---
 
 ## 📁 Folder Architecture
 
-```
+```text
 CrewBoard/
 ├── src/
-│   ├── assets/              # Static assets & graphics
-│   ├── components/          # Reusable Editorial Components
-│   │   ├── Button.jsx       # Solid editorial buttons
-│   │   ├── Input.jsx        # Floating cream inputs with charcoal border
-│   │   ├── Navbar.jsx       # Navbar with global Total Tasks badge (TaskContext)
-│   │   ├── Sidebar.jsx      # Solid sage sidebar with WorkspaceContext
-│   │   ├── StatsCard.jsx    # Compact typography metric blocks
-│   │   ├── ProjectCard.jsx  # Reusable project card with hover delete
-│   │   ├── TaskCard.jsx     # Solid pastel sticky note card with status dropdown & delete
-│   │   ├── KanbanColumn.jsx # 3-column sage paper container with empty states
-│   │   ├── Modal.jsx        # Accessible editorial dialog
-│   │   ├── WorkspaceClock.jsx # Standalone useEffect clock demonstration with interval cleanup
-│   │   └── WorkspaceHeader.jsx # Standalone zero-props useContext consumer component
-│   ├── context/             # [Exp 3] React Context Providers
-│   │   ├── TaskContext.jsx  # Global Task state provider & useTaskContext hook
-│   │   └── WorkspaceContext.jsx # Global Workspace metadata provider & useWorkspace hook
-│   ├── hooks/               # [Exp 2] Custom React Hooks
+│   ├── assets/
+│   ├── components/
+│   │   ├── Button.jsx
+│   │   ├── Input.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── Sidebar.jsx
+│   │   ├── StatsCard.jsx
+│   │   ├── ProjectCard.jsx
+│   │   ├── TaskCard.jsx
+│   │   ├── KanbanColumn.jsx
+│   │   ├── Modal.jsx
+│   │   ├── WorkspaceClock.jsx
+│   │   └── WorkspaceHeader.jsx
+│   ├── context/
+│   │   ├── TaskContext.jsx
+│   │   ├── WorkspaceContext.jsx
+│   │   └── AuthContext.jsx
+│   ├── hooks/
 │   │   ├── useModal.js
 │   │   ├── useKanban.js
 │   │   ├── useSearch.js
 │   │   └── useLocalStorage.js
 │   ├── layouts/
-│   │   └── AppLayout.jsx    # Shared application layout with global search
-│   ├── pages/               # 8 Connected Routes
-│   │   ├── LandingPage.jsx  # Editorial 2-column hero with Kanban preview
-│   │   ├── LoginPage.jsx    # Stationery sign-in
-│   │   ├── RegisterPage.jsx # Student registration
-│   │   ├── DashboardPage.jsx# Dynamic workspace dashboard with TaskContext & WorkspaceHeader
-│   │   ├── KanbanBoardPage.jsx # Interactive 3-column sticky-note Kanban board with TaskContext
-│   │   ├── ProjectsPage.jsx # Projects overview & project creation/deletion
-│   │   ├── TeamPage.jsx     # Team roster & member invitation
-│   │   └── SettingsPage.jsx # Persistent workspace settings
-│   ├── services/            # [Exp 4+] REST API client services
-│   ├── utils/               # Frontend utilities & constants
-│   ├── App.jsx              # React Router configuration
-│   ├── index.css            # Tailwind directives & design tokens
-│   └── main.jsx             # DOM root mount with WorkspaceProvider & TaskProvider
-├── backend/                 # [Exp 4–7] Backend structure (config, controllers, models, routes, etc.)
-├── docs/                    # [Exp 1–10] Documentation & milestone specs
-│   ├── exp1/
-│   ├── exp2/
-│   ├── exp3/
-│   └── ...
+│   │   └── AppLayout.jsx
+│   ├── pages/
+│   │   ├── LandingPage.jsx
+│   │   ├── LoginPage.jsx
+│   │   ├── RegisterPage.jsx
+│   │   ├── DashboardPage.jsx
+│   │   ├── KanbanBoardPage.jsx
+│   │   ├── ProjectsPage.jsx
+│   │   ├── TeamPage.jsx
+│   │   └── SettingsPage.jsx
+│   ├── services/
+│   │   └── authService.js
+│   ├── utils/
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── backend/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── seedAdmin.js
+│   ├── server.js
+│   ├── package.json
+│   └── .gitignore
+├── docs/
+├── docker-compose.yml
+├── Dockerfile
 ├── package.json
 └── README.md
 ```
 
----
-
-## 📊 MERN 10-Experiment Progression Tracker
-
-| Experiment | Title | Status | Focus |
-| :--- | :--- | :---: | :--- |
-| **Exp 1** | **UI Foundation & Architecture** | 🟢 **Completed** | React 18, Tailwind CSS, 9 Core Components, 8 Routes |
-| **Exp 2** | **Custom React Hooks** | 🟢 **Completed** | `useModal`, `useKanban`, `useSearch`, `useLocalStorage`, `useEffect` clock |
-| **Exp 3** | **Global State with Context API** | 🟢 **Completed** | `TaskContext` (`addTask`, `removeTask`, `moveTask`), `WorkspaceContext` |
-| **Exp 4** | **Node.js & Express REST APIs** | ⚪ *Planned* | Express server, CORS, route handlers, error middleware |
-| **Exp 5** | **MongoDB & Mongoose Persistence** | ⚪ *Planned* | Database models, schemas, and full CRUD persistence |
-| **Exp 6** | **JWT Authentication & Security** | ⚪ *Planned* | Password hashing with `bcrypt`, JWT cookies/tokens, protected routes |
-| **Exp 7** | **Real-Time Collaboration** | ⚪ *Planned* | WebSockets with Socket.IO for live crew updates |
-| **Exp 8** | **Drag & Drop Board Interactions** | ⚪ *Planned* | Fluid drag gestures, column reordering, optimistic updates |
-| **Exp 9** | **Docker Containerization** | ⚪ *Planned* | Frontend & Backend `Dockerfile`, `docker-compose.yml` |
-| **Exp 10** | **CI/CD Pipelines & Cloud Deployment** | ⚪ *Planned* | GitHub Actions workflow, automated tests, cloud hosting |
+*The structure above highlights the main application files. Additional files and subdirectories may exist in the repository.*
 
 ---
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- Node.js and npm
+- MongoDB Atlas or a local MongoDB instance
+- Git
+- Docker Desktop (optional)
+
+### 1. Clone the repository
+
 ```bash
-# 1. Install Dependencies
-npm install
-
-# 2. Run Development Server
-npm run dev
-
-# 3. Build for Production (Verified: 0 errors)
-npm run build
+git clone <YOUR_GITHUB_REPOSITORY_URL>
+cd CrewBoard
 ```
+
+### 2. Install frontend dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `backend/.env` file with the environment variables required by the backend.
+
+For example:
+
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_long_random_secret
+```
+
+Use the exact variable names expected by your backend configuration. Keep this file private and do not commit it to GitHub.
+
+### 4. Install backend dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### 5. Start the backend
+
+From the `backend` directory:
+
+```bash
+npm run dev
+```
+
+### 6. Start the frontend
+
+Open another terminal in the project root:
+
+```bash
+npm run dev
+```
+
+Open the Vite development URL displayed in the terminal, typically `http://localhost:5173`.
+
+Ensure the frontend API configuration points to the running backend.
+
+---
+
+## 🐳 Docker Setup
+
+To build and start the configured services:
+
+```bash
+docker compose up --build
+```
+
+To view logs:
+
+```bash
+docker compose logs
+```
+
+To stop the services:
+
+```bash
+docker compose down
+```
+
+Refer to the project's Docker Compose configuration for the exact service names, port mappings, and environment settings.
+
+---
+
+## 🔮 Future Enhancements
+
+- **Real-Time Collaboration:** Live task updates and team activity using Socket.IO.
+- **Advanced Drag & Drop:** Smooth task movement and column reordering.
+- **CI/CD Automation:** Automated builds and testing with GitHub Actions.
+- **Cloud Deployment:** Deploy the frontend and backend to cloud hosting platforms.
+- **Enhanced Team Workflows:** Expand collaboration and project coordination features.
+
+---
+
+## 🎯 Project Vision
+
+CrewBoard aims to provide student project teams with a calm, organized, and collaborative environment for managing tasks and semester milestones. By combining a tactile Kanban interface with a modern full-stack architecture, the platform brings project planning, task tracking, and workspace management together in one place.
